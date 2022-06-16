@@ -30,7 +30,7 @@ const style = {
 const SearchDrugs: React.FC = () => {
   // handling Modal
   const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
+  const oppenModal = () => setOpen(true);
   const handleClose = () => setOpen(false);
   // handling modal end
   const [input, setInput] = React.useState({
@@ -39,7 +39,7 @@ const SearchDrugs: React.FC = () => {
     gender: "",
     device: "",
   });
-
+  const [isDisabled, setDisabled] = useState(false);
   const saveInput = (e: any) => {
     const { name, value } = e.target;
     setInput({
@@ -69,13 +69,16 @@ const SearchDrugs: React.FC = () => {
 
     fetchData();
   }, []);
-  
+
   // addUser data
   const addUser = () => {
     let addUser = data;
     addUser.unshift({ ...input });
 
     setData([...data]);
+    console.log(...data);
+    handleClose();
+    setDisabled(true);
   };
 
   //   delete a user from table
@@ -104,7 +107,7 @@ const SearchDrugs: React.FC = () => {
             >
               <Box sx={style}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
-                  Text in a modal
+                  Add new user
                 </Typography>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                   <TextField
@@ -146,7 +149,18 @@ const SearchDrugs: React.FC = () => {
                     type="text"
                   />
                 </Typography>
-                <Button onClick={addUser}>add</Button>
+                <Button
+                  onClick={addUser}
+                  disabled={
+                    input.fullName === "" ||
+                    input.country === "" ||
+                    input.device === ""
+                      ? true
+                      : false
+                  }
+                >
+                  add
+                </Button>
               </Box>
             </Modal>
             {/* Modal card End */}
@@ -157,10 +171,11 @@ const SearchDrugs: React.FC = () => {
                   <Table sx={{ width: 900 }}>
                     <TableHead>
                       <TableRow>
-                        <TableCell>user</TableCell>
+                        <TableCell>Full Name</TableCell>
                         <TableCell align="right">Country</TableCell>
-                        <TableCell align="right">gender</TableCell>
-                        <TableCell align="right">device</TableCell>
+                        <TableCell align="right">Gender</TableCell>
+                        <TableCell align="right">Device</TableCell>
+                        <TableCell align="right">Actions</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -185,7 +200,7 @@ const SearchDrugs: React.FC = () => {
                             {/* End */}
                             {/* button for adding user */}
 
-                            <Button onClick={handleOpen}>Add</Button>
+                            <Button onClick={oppenModal}>Add</Button>
                             {/* End */}
                           </TableRow>
                         ))}
