@@ -4,9 +4,6 @@ import Axios from "axios";
 import logo from "./logo.svg";
 import "./App.css";
 import Paper from "@mui/material/Paper";
-import InputBase from "@mui/material/InputBase";
-import IconButton from "@mui/material/IconButton";
-import SearchIcon from "@mui/icons-material/Search";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -14,13 +11,49 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Grid from "@mui/material/Grid";
-import Checkbox from "@mui/material/Checkbox";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+const style = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
 
+  bgcolor: "background.paper",
+
+  boxShadow: 24,
+  p: 4,
+};
 const SearchDrugs: React.FC = () => {
+  // handling Modal
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  // handling modal end
+  const [input, setInput] = React.useState({
+    fullName: "",
+    country: "",
+    gender: "",
+    device: "",
+  });
+
+  const saveInput = (e: any) => {
+    const { name, value } = e.target;
+    setInput({
+      ...input,
+      [name]: value,
+    });
+  };
+
+  // fatching data from api
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    //   unmount fatch all users from api
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -36,10 +69,22 @@ const SearchDrugs: React.FC = () => {
 
     fetchData();
   }, []);
-  const handleRemoveItem = (itemId: any) => {
-    setData(data.filter(({ id }) => id !== itemId));
+  
+  // addUser data
+  const addUser = () => {
+    let addUser = data;
+    addUser.unshift({ ...input });
+
+    setData([...data]);
   };
 
+  //   delete a user from table
+  const handleRemoveItem = (item: any) => {
+    let delUser = data;
+    delUser.splice(item, 1);
+    setData([...delUser]);
+  };
+  // End
   return (
     <div className="App">
       {JSON.stringify(data)}
@@ -50,24 +95,64 @@ const SearchDrugs: React.FC = () => {
         <Grid item xs={12} md={8}>
           <header className="App-header">
             <img src={logo} className="App-logo" alt="logo" />
-            <Paper
-              component="form"
-              sx={{
-                p: "2px 4px",
-                display: "flex",
-                alignItems: "center",
-                width: 900,
-                height: 60,
-                borderRadius: 3,
-                border: "1px solid #ced4da",
-              }}
+            {/* Modal card  */}
+            <Modal
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
             >
-              <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">
-                <SearchIcon />
-              </IconButton>
-            </Paper>
+              <Box sx={style}>
+                <Typography id="modal-modal-title" variant="h6" component="h2">
+                  Text in a modal
+                </Typography>
+                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                  <TextField
+                    value={input.fullName}
+                    placeholder="fullName"
+                    name="fullName"
+                    onChange={saveInput}
+                    label="fullName"
+                    type="text"
+                  />
+                </Typography>
+                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                  <TextField
+                    value={input.country}
+                    name="country"
+                    onChange={saveInput}
+                    label="country"
+                    placeholder="country"
+                    type="text"
+                  />
+                </Typography>
+                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                  <TextField
+                    value={input.gender}
+                    placeholder="Gender"
+                    label="gender"
+                    name="gender"
+                    onChange={saveInput}
+                    type="text"
+                  />
+                </Typography>
+                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                  <TextField
+                    value={input.device}
+                    label="device"
+                    placeholder="device"
+                    onChange={saveInput}
+                    name="device"
+                    type="text"
+                  />
+                </Typography>
+                <Button onClick={addUser}>add</Button>
+              </Box>
+            </Modal>
+            {/* Modal card End */}
             {data.length > 0 ? (
               <div>
+                {/* user data table start here */}
                 <TableContainer component={Paper} sx={{ width: 900 }}>
                   <Table sx={{ width: 900 }}>
                     <TableHead>
@@ -93,7 +178,15 @@ const SearchDrugs: React.FC = () => {
                             <TableCell align="right">{user.country}</TableCell>
                             <TableCell align="right">{user.gender}</TableCell>
                             <TableCell align="right">{user.device}</TableCell>
-                            <button onClick={handleRemoveItem}>del</button>
+                            {/* button for deleting */}
+                            <Button onClick={() => handleRemoveItem(user)}>
+                              del
+                            </Button>
+                            {/* End */}
+                            {/* button for adding user */}
+
+                            <Button onClick={handleOpen}>Add</Button>
+                            {/* End */}
                           </TableRow>
                         ))}
                     </TableBody>
@@ -101,7 +194,7 @@ const SearchDrugs: React.FC = () => {
                 </TableContainer>
               </div>
             ) : (
-              <div>j</div>
+              <div>sorry no user avalible at the main time</div>
             )}
           </header>
         </Grid>
