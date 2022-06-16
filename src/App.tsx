@@ -28,6 +28,10 @@ const style = {
   p: 4,
 };
 const SearchDrugs: React.FC = () => {
+  // fatching data from api
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   // handling Modal
   const [open, setOpen] = React.useState(false);
   const oppenModal = () => setOpen(true);
@@ -39,7 +43,7 @@ const SearchDrugs: React.FC = () => {
     gender: "",
     device: "",
   });
-  const [isDisabled, setDisabled] = useState(false);
+
   const saveInput = (e: any) => {
     const { name, value } = e.target;
     setInput({
@@ -47,10 +51,6 @@ const SearchDrugs: React.FC = () => {
       [name]: value,
     });
   };
-
-  // fatching data from api
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     //   unmount fatch all users from api
@@ -71,14 +71,13 @@ const SearchDrugs: React.FC = () => {
   }, []);
 
   // addUser data
-  const addUser = () => {
+  const addUser = (e: any) => {
+    e.preventDefault();
     let addUser = data;
     addUser.unshift({ ...input });
-
     setData([...data]);
     console.log(...data);
     handleClose();
-    setDisabled(true);
   };
 
   //   delete a user from table
@@ -150,6 +149,7 @@ const SearchDrugs: React.FC = () => {
                   />
                 </Typography>
                 <Button
+                type="submit"
                   onClick={addUser}
                   disabled={
                     input.fullName === "" ||
